@@ -74,6 +74,20 @@ afterSelectClearScreen:(ToolViewActionBlock)afterSelectClearScreen
     return self;
 }
 
+- (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event {
+    // 使选择栏按钮可响应
+    BOOL inside = [super pointInside:point withEvent:event];
+    if (!self.colorView.hidden) {
+        CGPoint point1 = [self convertPoint:point toView:self.colorView];
+        inside = (inside || [self.colorView pointInside:point1 withEvent:event]);
+    }
+    if (!self.lineWidthView.hidden) {
+        CGPoint point1 = [self convertPoint:point toView:self.lineWidthView];
+        inside = (inside || [self.lineWidthView pointInside:point1 withEvent:event]);
+    }
+    return inside;
+}
+
 #pragma mark - 创建工具视图中的按钮
 -(void)createButtonsWithArray:(NSArray *)array
 {
@@ -170,52 +184,61 @@ afterSelectClearScreen:(ToolViewActionBlock)afterSelectClearScreen
     //2.遍历所有子视图，如果处于显示状态，则将其关闭
     //3.直接判断子视图，此方法仅适用于子视图数量极少情况
     UIView *view = nil;
-    if (self.colorView.frame.origin.y > 0) {
+//    if (self.colorView.frame.origin.y > 0) {
+//        view = self.colorView;
+//    }else if (self.lineWidthView.frame.origin.y > 0){
+//        view = self.lineWidthView;
+//    }else{
+//        return;
+//    }
+    if (self.colorView.hidden == NO) {
         view = self.colorView;
-    }else if (self.lineWidthView.frame.origin.y > 0){
+    }else if (self.lineWidthView.hidden == NO){
         view = self.lineWidthView;
     }else{
         return;
     }
-    
+
     if (view == compareView) {
         return;
     }
-    
-    //视图
-    CGRect toFrame = view.frame;
-    //工具条视图边框
-    CGRect toolFrame = self.frame;
-
-    toFrame.origin.y = -44;
-    toolFrame.size.height = 44;
-    
-    [UIView animateWithDuration:0.5f animations:^{
-        [self setFrame:toolFrame];
-        [view setFrame:toFrame];
-    }];
+//
+//    //视图
+//    CGRect toFrame = view.frame;
+//    //工具条视图边框
+//    CGRect toolFrame = self.frame;
+//
+//    toFrame.origin.y = -44;
+//    toolFrame.size.height = 44;
+//
+//    [UIView animateWithDuration:0.5f animations:^{
+//        [self setFrame:toolFrame];
+//        [view setFrame:toFrame];
+//    }];
+    view.hidden = YES;
 }
 
 #pragma mark 显示/隐藏指定视图
 -(void)showHideView:(UIView *)view
 {
-    //动画显示视图
-    CGRect toFrame = view.frame;
-    //工具条视图边框
-    CGRect toolFrame = self.frame;
-    if (toFrame.origin.y < 0) {
-        //隐藏时显示
-        toFrame.origin.y = 44;
-        toolFrame.size.height = 88;
-    }else{
-        toFrame.origin.y = -44;
-        toolFrame.size.height = 44;
-    }
-    
-    [UIView animateWithDuration:0.5f animations:^{
-        [self setFrame:toolFrame];
-        [view setFrame:toFrame];
-    }];
+//    //动画显示视图
+//    CGRect toFrame = view.frame;
+//    //工具条视图边框
+//    CGRect toolFrame = self.frame;
+//    if (toFrame.origin.y < 0) {
+//        //隐藏时显示
+//        toFrame.origin.y = 44;
+//        toolFrame.size.height = 88;
+//    }else{
+//        toFrame.origin.y = -44;
+//        toolFrame.size.height = 44;
+//    }
+//
+//    [UIView animateWithDuration:0.5f animations:^{
+//        [self setFrame:toolFrame];
+//        [view setFrame:toFrame];
+//    }];
+    view.hidden = NO;
 }
 
 #pragma mark 显示/隐藏线宽选择视图
@@ -232,7 +255,12 @@ afterSelectClearScreen:(ToolViewActionBlock)afterSelectClearScreen
         [self addSubview:view];
         
         self.lineWidthView = view;
-        
+        self.translatesAutoresizingMaskIntoConstraints = NO;
+        view.translatesAutoresizingMaskIntoConstraints = NO;
+        [view.leftAnchor constraintEqualToAnchor:self.leftAnchor].active = YES;
+        [view.rightAnchor constraintEqualToAnchor:self.rightAnchor].active = YES;
+        [view.topAnchor constraintEqualToAnchor:self.bottomAnchor].active = YES;
+        [view.heightAnchor constraintEqualToConstant:44].active = YES;
     }
     //2.动画显示线宽视图
     [self showHideView:self.lineWidthView];
@@ -256,6 +284,12 @@ afterSelectClearScreen:(ToolViewActionBlock)afterSelectClearScreen
         [self addSubview:view];
         
         self.colorView = view;
+        self.translatesAutoresizingMaskIntoConstraints = NO;
+        view.translatesAutoresizingMaskIntoConstraints = NO;
+        [view.leftAnchor constraintEqualToAnchor:self.leftAnchor].active = YES;
+        [view.rightAnchor constraintEqualToAnchor:self.rightAnchor].active = YES;
+        [view.topAnchor constraintEqualToAnchor:self.bottomAnchor].active = YES;
+        [view.heightAnchor constraintEqualToConstant:44].active = YES;
     }
     //2.动画显示颜色视图
     [self showHideView:self.colorView];

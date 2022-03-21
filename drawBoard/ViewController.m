@@ -12,7 +12,7 @@
 
 @interface ViewController ()
 
-@property (weak, nonatomic)DrawView *drawView;
+@property (weak, nonatomic) DrawView *drawView;
 
 @end
 
@@ -21,12 +21,20 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
+    self.view.translatesAutoresizingMaskIntoConstraints = NO;
     
     DrawView *drawView = [[DrawView alloc]initWithFrame:self.view.bounds];
     [self.view addSubview:drawView];
+    drawView.translatesAutoresizingMaskIntoConstraints = NO;
+    
+    [drawView.leftAnchor constraintEqualToAnchor:self.view.leftAnchor].active = YES;
+    [drawView.rightAnchor constraintEqualToAnchor:self.view.rightAnchor].active = YES;
+    [drawView.topAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor].active = YES;
+    [drawView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor].active = YES;
+    
     self.drawView = drawView;
     
-    ToolView *toolView = [[ToolView alloc]initWithFrame:CGRectMake(0, 0, 375, 44) afterSelectColor:^(UIColor *color) {
+    ToolView *toolView = [[ToolView alloc] initWithFrame:CGRectMake(0, 0, 375, 44) afterSelectColor:^(UIColor *color) {
         //给绘图视图设置颜色
         [drawView setDrawColor:color];
  
@@ -58,6 +66,11 @@
     }];
     
     [self.view addSubview:toolView];
+    toolView.translatesAutoresizingMaskIntoConstraints = NO;
+    [toolView.leftAnchor constraintEqualToAnchor:self.view.leftAnchor].active = YES;
+    [toolView.rightAnchor constraintEqualToAnchor:self.view.rightAnchor].active = YES;
+    [toolView.topAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor].active = YES;
+    [toolView.heightAnchor constraintEqualToConstant:44].active = YES;
 }
 
 #pragma mark - 照片选择代理方法
